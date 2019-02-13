@@ -1,0 +1,48 @@
+/* CSS Styling */
+
+html, body {
+    margin: auto;
+    width: 50%;
+    font-family: 'Old Standard TT', serif;
+    font-size: 1.1em;
+}
+
+h1 {
+    width: 100%;
+    text-align: center;
+    border-bottom: 2px solid #000;
+    line-height: 0.1em;
+    margin: 50px 0px 50px 0px;
+}
+
+h1 span {
+    background: #fff;
+    padding: 0px 10px;
+}
+
+#center-button-div {
+    text-align: center;
+}
+
+.button {
+    background-color: black;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.0em;
+    margin: 4px 2px 25px 0px;
+    cursor: pointer;
+    width: auto;
+}
+
+.button:hover {
+    background-color: gray;
+}
+
+#todoList {
+    text-align: center;
+}

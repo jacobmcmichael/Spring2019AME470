@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Old+Standard+TT" rel="stylesheet">
+
+    <script src='asyncReq.js'>
+    </script>
+
+    <script>
+      var allTodos = []
+
+      var loadAllTodos = function(){
+        loadFile("./getAllTodos", function(data){
+          createTodoMarkup(data);
+        });
+      }
+      
+      var createTodoMarkup = function(data){
+        var todoList = JSON.parse(data);
+        allTodos = todoList;
+        var markup = "";
+        for(var i = 0; i < todoList.length; i++){
+            markup = markup + "<p>" + todoList[i].text +
+              "<a href='javascript: editTodo(" + i + ")' style='text-decoration: none'> edit</a>" +
+              "<a href='javascript: deleteTodo(" + i + ")' style='text-decoration: none'> delete</a>" +
+              "</p>";
+        }
+        document.getElementById("todoList").innerHTML = markup;
+      }
+
+      var addNewTodo = function(){
+        var text = prompt("Enter new Todo");
+        loadFile("./addTodo?text=" + text, function(data){
+          createTodoMarkup(data);
+        });
+      }
+
+      var editTodo = function(index){
+        var newText = prompt("Editing todo...", allTodos[index].text);
+
+        loadFile("./editTodo?index=" + index + "&newText=" 
+        + newText, function(data){createTodoMarkup(data)});
+      }
+
+      var deleteTodo = function(index) {
+        loadFile("./deleteTodo?index=" + index, function(data){createTodoMarkup(data)});
+      }
+    </script>
+</head>
+
+<body onload='loadAllTodos()'>
+  <h1><span>To-Do List</span></h1>
+  <div id="center-button-div">
+    <button class="button" onclick='addNewTodo()'>Add New</button>
+  </div>
+</body>
+
+  <div id='todoList'></div>
+</html>
