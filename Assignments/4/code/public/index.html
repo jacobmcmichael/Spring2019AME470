@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <script src='asyncReq.js'>
+  </script>
+  <script>
+    var allTodos = []
+    var loadAllTodos = function(){
+      loadFile("./getAllTodos", function(data){
+        createTodoMarkup(data);
+      });
+    }
+    var addNewTodo = function(){
+      var text = prompt("Enter new Todo");
+      loadFile("./addTodo?text=" + text, function(data){
+        createTodoMarkup(data);
+      });
+    }
+    var createTodoMarkup = function(data){
+      var todoList = JSON.parse(data);
+      allTodos = todoList;
+      var markup = "";
+      for(var i = 0; i < todoList.length; i++){
+          markup = markup + "<p>" + todoList[i].text +
+            "<a href='javascript:editTodo(" + i + ")'> edit </a>" +
+            "<a href='javascript:deleteTodo(" + i + ")'> delete </a>" +
+            "</p>";
+      }
+      document.getElementById("todoList").innerHTML = markup;
+    }
+
+    var editTodo = function(index){
+      var newText = prompt("Editing todo...", allTodos[index].text);
+      loadFile("./editTodo?id=" + allTodos[index].id + "&newText=" 
+      + newText, function(data){createTodoMarkup(data)});
+    }
+
+    var deleteTodo = function(index){
+      loadFile("./deleteTodo?id=" + allTodos[index].id, function(data){createTodoMarkup(data)});
+    }
+  </script>
+</head>
+<body onload='loadAllTodos()'>
+  <h1>Todos</h1>
+  <button onclick='addNewTodo()'> Add New </button>
+</body>
+  <div id='todoList'> </div>
+</html>
