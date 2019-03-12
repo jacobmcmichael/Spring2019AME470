@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+<style>
+#backButton{
+  position: fixed;
+  display:none;
+}
+#feedList .listButton,
+#itemWrapper .listButton{
+  display: block;
+  width: 100%;
+}
+.heading{
+  text-align:center;
+}
+
+.actionButton{
+  font-size: 25px;
+  margin: auto;
+}
+.selected{
+  background: gold;
+}
+#listWrapper{
+  left: 0px;
+  position: absolute;
+  width: 30%;
+  background: gray;
+}
+#itemWrapper{
+  left: 30%;
+  position: absolute;
+  width: 30%;
+  background: lightgray;
+}
+#detailsWrapper{
+  position: absolute;
+  right: 0px;
+  width: 40%;
+  text-align:center;
+}
+
+#detailsWrapper, #itemWrapper, #listWrapper{
+    height: 100%;
+    overflow: scroll;
+}
+@media (max-width: 500px){
+  #detailsWrapper, #itemWrapper, #listWrapper{
+     width: 100%;
+     left: 0px;
+  }
+  #backButton{
+    display: block;
+  }
+
+  body.state0 #backButton{
+    display: none;
+  }
+  body.state0 #listWrapper{
+    display: block;
+  }
+  body.state0 #itemWrapper{
+    display: none;
+  }
+  body.state0 #detailsWrapper{
+    display: none;
+  }
+
+  body.state1 #backButton{
+    display: block;
+  }
+  body.state1 #listWrapper{
+    display: none;
+  }
+  body.state1 #itemWrapper{
+    display: block;
+  }
+  body.state1 #detailsWrapper{
+    display: none;
+  }
+
+  body.state2 #backButton{
+    display: block;
+  }
+  body.state2 #listWrapper{
+    display: none;
+  }
+  body.state2 #itemWrapper{
+    display: none;
+  }
+  body.state2 #detailsWrapper{
+    display: block;
+  }
+}
+
+body{
+  margin: 0;
+}
+</style>
+  <script src='asyncReq.js'>
+  </script>
+  <script>
+    var state = 0;
+    var allFeeds = []
+    var allItems = []
+    var loadAllFeeds = function(){
+      loadFile("./getAllFeeds", function(data){
+        createFeedMarkup(data);
+      });
+    }
+    var addNewFeed = function(){
+      var text = prompt("Enter new Feed");
+      if(text!=null){
+        loadFile("./addFeed?text=" + text, function(data){
+          createFeedMarkup(data);
+        });
+      }
+    }
+    var createFeedMarkup = function(data){
+      var feedList = JSON.parse(data);
+      allFeeds = feedList;
+      var markup = "";
+      for(var i = 0; i < feedList.length; i++){
+        markup = markup + "<button class='listButton' onclick='feedSelected(" + i + ")'>" +
+           "<h1>" + feedList[i].title + "</h1>"+
+           "<h2>" + feedList[i].text + "</h2>"+
+        "</button>";
+      }
+      document.getElementById("feedList").innerHTML = markup;
+    }
+    var editFeed = function(index){
+      var newText = prompt("Editing feed...", allFeeds[index].title);
+      if(newText != null){
+        loadFile("./editFeed?id=" + allFeeds[index].id + "&newText=" 
+        + newText, function(data){createFeedMarkup(data)});
+      }
+    }
+
+    var deleteFeed = function(index){
+      var newText = confirm("Delete feed '" + allFeeds[index].title +"'?");
+      if(newText != false){
+        loadFile("./deleteFeed?id=" + allFeeds[index].id + "&newText=" 
+        + newText, function(data){
+          document.getElementById("detailsWrapper").innerHTML = "";
+          document.getElementById("itemWrapper").innerHTML = "";
+          createFeedMarkup(data);
+        });
+      }
+    }
+
+    var goBack = function()
+    { 
+      state = state - 1;
+      updateBodyClass();
+      console.log(state);
+      var y = function(){if(state == 1){
+        $("#itemWrapper .listButton").removeClass("selected");
+      }
+      else if(state == 0){
+        $("#listWrapper .listButton").removeClass("selected");
+      }}
+      setTimeout(y, 1000);
+    }
+
+    var updateBodyClass = function()
+    {
+      document.getElementsByTagName("body")[0].className = "state" + state;
+    }
+
+    var itemSelected = function(index){
+      state = 2;
+      updateBodyClass();
+      document.getElementById("detailsWrapper").innerHTML = "<h1> Loading ...</h1>"
+      $("#itemWrapper .listButton").removeClass("selected");
+      $($("#itemWrapper .listButton")[index]).addClass("selected")
+      feedObj = allItems[index];
+      var markup = 
+             "<h1>" + feedObj.name + "</h1>"+
+            "<img src='" + feedObj.artworkUrl100 + "'>" +
+             "<h2>" + feedObj.artistName + "</h2>";
+        document.getElementById("detailsWrapper").innerHTML = markup;
+    }
+
+    var feedSelected = function(index){
+      state = 1;
+      updateBodyClass();
+      document.getElementById("itemWrapper").innerHTML = "<h1> Loading ... </h1>"
+      $("#feedList .listButton").removeClass("selected");
+      $($("#feedList .listButton")[index]).addClass("selected")
+
+      var url = allFeeds[index].text;
+      loadFile("./getFeedData?url=" + url, function(data){
+        var x = JSON.parse(data);
+        var title = x.feed.title;
+        var items = x.feed.results;
+        allItems = items;
+        var markup = "<h1 class='heading'>"+ title + "</h1>" + 
+          "<button class='actionButton' onclick=editFeed(" + index +")> Rename </button>" +
+          "<button class='actionButton' onclick=deleteFeed(" + index +")> Delete </button>";
+        for(var i = 0; i < items.length; i++){
+          markup = markup + "<button class='listButton' onclick='itemSelected(" + i + ")'>" +
+             "<h1>" + items[i].name + "</h1>"+
+             "<h2>" + items[i].artistName + "</h2>"+
+          "</button>";
+        }
+        document.getElementById("itemWrapper").innerHTML = markup;
+
+      });
+    }
+    var main = function(){
+      state = 0;
+      updateBodyClass();
+      loadAllFeeds();
+    }
+  </script>
+</head>
+<body onload='main()'>
+<div id='listWrapper'>
+  <h1 class='heading'>Feeds</h1>
+  <button class='actionButton' onclick='addNewFeed()'> Add New </button>
+  <div id='feedList'> </div>
+</div> 
+<div id='itemWrapper'>
+</div> 
+<div id='detailsWrapper'>
+</div> 
+  <button class='actionButton' id='backButton' onclick='goBack()'> Back </button>
+</body>
+</html>
