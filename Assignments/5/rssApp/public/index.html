@@ -257,6 +257,7 @@ body{
         var items = x.feed.results;
         allItems = items;
         var markup = "<h1 class='heading'>"+ title + "</h1>" + 
+          "<button class='actionButton' id='backButton' onclick='goBack()'> Back </button>" +
           "<button class='actionButton' onclick=editFeed(" + index +")> Rename </button>" +
           "<button class='actionButton' onclick=deleteFeed(" + index +")> Delete </button>";
         for(var i = 0; i < items.length; i++){
@@ -286,6 +287,5 @@ body{
 </div> 
 <div id='detailsWrapper'>
 </div> 
-  <button class='actionButton' id='backButton' onclick='goBack()'> Back </button>
 </body>
 </html>
