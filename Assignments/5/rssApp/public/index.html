@@ -130,6 +130,7 @@
 
   body.state1 #backButton{
     display: block;
+    position: absolute;
   }
   body.state1 #listWrapper{
     display: none;
@@ -152,6 +153,14 @@
   }
   body.state2 #detailsWrapper{
     display: block;
+  }
+
+  #deleteButton {
+    position: absolute;
+  }
+
+  #renameButton {
+    position: absolute;
   }
 }
 
@@ -258,8 +267,8 @@ body{
         allItems = items;
         var markup = "<h1 class='heading'>"+ title + "</h1>" + 
           "<button class='actionButton' id='backButton' onclick='goBack()'> Back </button>" +
-          "<button class='actionButton' onclick=editFeed(" + index +")> Rename </button>" +
-          "<button class='actionButton' onclick=deleteFeed(" + index +")> Delete </button>";
+          "<button class='actionButton' id='renameButton' onclick=editFeed(" + index +")> Rename </button>" +
+          "<button class='actionButton' id='deleteButton' onclick=deleteFeed(" + index +")> Delete </button>";
         for(var i = 0; i < items.length; i++){
           markup = markup + "<button class='listButton' onclick='itemSelected(" + i + ")'>" +
              "<h1>" + items[i].name + "</h1>"+
