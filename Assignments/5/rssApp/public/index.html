@@ -70,7 +70,8 @@
     height: 100%;
     overflow: scroll;
 }
-@media (max-width: 500px){ /* for smartphones */
+
+@media (max-width: 500px){ /* for smartphones under ***px wide */
   #detailsWrapper, #itemWrapper, #listWrapper{
      width: 100%;
      left: 0px;
@@ -81,7 +82,8 @@
 
   .heading {
     position: sticky;
-    top: 0px;
+    top: 5vh;
+    padding-top: 1vh;
   }
 
   .actionButton{
@@ -101,7 +103,7 @@
     margin: 0 auto;
     cursor: pointer;
     position: sticky;
-    top: 0px;
+    top: 5vh;
   }
 
   h2 {
