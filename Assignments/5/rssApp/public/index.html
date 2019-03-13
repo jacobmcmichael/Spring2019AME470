@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+<link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
@@ -17,12 +18,32 @@
 }
 .heading{
   text-align:center;
+  color: #48E5C2;
+  margin-top: 5vh;
+  font-family: 'Josefin Sans', sans-serif;
 }
 
 .actionButton{
   font-size: 25px;
+  font-weight: bold;
   margin: auto;
+  background-color: #48E5C2;
+  border: none;
+  border-radius: 8px;
+  color: #333333;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-size: 16px;
+  margin: 0 auto;
+  cursor: pointer;
 }
+
+.actionButton:active {
+  background-color: #5E5E5E;
+}
+
 .selected{
   background: gold;
 }
@@ -30,7 +51,7 @@
   left: 0px;
   position: absolute;
   width: 30%;
-  background: gray;
+  background: #333333;
 }
 #itemWrapper{
   left: 30%;
@@ -49,7 +70,7 @@
     height: 100%;
     overflow: scroll;
 }
-@media (max-width: 500px){
+@media (max-width: 500px){ /* for smartphones */
   #detailsWrapper, #itemWrapper, #listWrapper{
      width: 100%;
      left: 0px;
@@ -109,14 +130,14 @@ body{
     var allFeeds = []
     var allItems = []
     var loadAllFeeds = function(){
-      loadFile("./getAllFeeds", function(data){
+      loadFile("http://18.217.119.105:8080/getAllFeeds", function(data){
         createFeedMarkup(data);
       });
     }
     var addNewFeed = function(){
       var text = prompt("Enter new Feed");
       if(text!=null){
-        loadFile("./addFeed?text=" + text, function(data){
+        loadFile("http://18.217.119.105:8080/addFeed?text=" + text, function(data){
           createFeedMarkup(data);
         });
       }
@@ -136,7 +157,7 @@ body{
     var editFeed = function(index){
       var newText = prompt("Editing feed...", allFeeds[index].title);
       if(newText != null){
-        loadFile("./editFeed?id=" + allFeeds[index].id + "&newText=" 
+        loadFile("http://18.217.119.105:8080/editFeed?id=" + allFeeds[index].id + "&newText=" 
         + newText, function(data){createFeedMarkup(data)});
       }
     }
@@ -144,7 +165,7 @@ body{
     var deleteFeed = function(index){
       var newText = confirm("Delete feed '" + allFeeds[index].title +"'?");
       if(newText != false){
-        loadFile("./deleteFeed?id=" + allFeeds[index].id + "&newText=" 
+        loadFile("http://18.217.119.105:8080/deleteFeed?id=" + allFeeds[index].id + "&newText=" 
         + newText, function(data){
           document.getElementById("detailsWrapper").innerHTML = "";
           document.getElementById("itemWrapper").innerHTML = "";
@@ -194,7 +215,7 @@ body{
       $($("#feedList .listButton")[index]).addClass("selected")
 
       var url = allFeeds[index].text;
-      loadFile("./getFeedData?url=" + url, function(data){
+      loadFile("http://18.217.119.105:8080/getFeedData?url=" + url, function(data){
         var x = JSON.parse(data);
         var title = x.feed.title;
         var items = x.feed.results;
@@ -221,8 +242,8 @@ body{
 </head>
 <body onload='main()'>
 <div id='listWrapper'>
-  <h1 class='heading'>Feeds</h1>
-  <button class='actionButton' onclick='addNewFeed()'> Add New </button>
+  <h1 class='heading'>RSS Feeds</h1>
+  <button class='actionButton' onclick='addNewFeed()'> Add New URL </button>
   <div id='feedList'> </div>
 </div> 
 <div id='itemWrapper'>
