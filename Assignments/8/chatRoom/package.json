@@ -1,0 +1,32 @@
+{
+  "name": "chatroom",
+  "version": "1.0.0",
+  "description": "ame470 final project",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Jacob McMichael",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "connect-mongo": "^2.0.3",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.16.4",
+    "express-flash": "0.0.2",
+    "express-session": "^1.16.1",
+    "method-override": "^3.0.0",
+    "mongodb": "^3.2.3",
+    "mongoose": "^5.5.4",
+    "mongoskin": "^2.1.0",
+    "node-rest-client": "^3.1.0",
+    "passport": "^0.4.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "passport-oauth2": "^1.5.0",
+    "passport-twitter": "^1.0.4",
+    "save": "^2.3.3"
+  }
+}

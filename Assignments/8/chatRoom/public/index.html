@@ -1,0 +1,552 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta content="width=device-width, initial-scale=1, width=device-width, maximum-scale=1" name="viewport">
+  <script src='asyncReq.js'></script>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Spectral:500" rel="stylesheet">
+  <style>
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    #backButton {
+      position: fixed;
+      display: none;
+    }
+
+    #feedList .listButton,
+    #itemWrapper .listButton {
+      display: block;
+      width: 100%;
+      padding: 0;
+    }
+
+    .heading:after {
+      margin-top: 1.5vh;
+      content: ' ';
+      display: block;
+      border: 1px solid #FFFFFF;
+      border-radius: 0px;
+      -webkit-border-radius: 2px;
+      -moz-border-radius: 2px;
+      box-shadow: inset 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+      -webkit-box-shadow: inset 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+      -moz-box-shadow: inset 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+    }
+
+    .heading2:after {
+      margin-top: 1.5vh;
+      content: ' ';
+      display: block;
+      border: 1px solid #FFFFFF;
+      border-radius: 2px;
+      -webkit-border-radius: 2px;
+      -moz-border-radius: 2px;
+      box-shadow: inset 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+      -webkit-box-shadow: inset 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+      -moz-box-shadow: inset 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+    }
+
+    .heading {
+      color: #FFFFFF;
+      font-size: 2.5em;
+      width: 100%;
+      text-align: center;
+      margin: 1.5vh 0 1.5vh 0;
+    }
+
+    .heading2 {
+      color: #FFFFFF;
+      font-size: 2.5em;
+      width: 100%;
+      text-align: center;
+      margin: 0vh 0 1.5vh 0;
+      font-family: 'Spectral', serif;
+      font-weight: semi bold;
+    }
+
+    .actionButton {
+      font-size: 25px;
+      margin: auto;
+    }
+
+    .selected {
+      background: gold;
+    }
+
+    #listWrapper {
+      left: 0px;
+      position: absolute;
+      width: 30%;
+      background: #2D3142;
+      font-family: 'Spectral', serif;
+    }
+
+    #itemWrapper {
+      left: 30%;
+      position: absolute;
+      width: 30%;
+      background: #FFFFFF;
+      color: #FFFFFF;
+      text-align: center;
+      font-family: 'Spectral', serif;
+    }
+
+    #detailsWrapper {
+      position: absolute;
+      right: 0px;
+      width: 40%;
+      text-align: center;
+    }
+
+    #accountWrapper {
+      padding: 1.5vh 0 5.0vh 0;
+      background: #EF8354;
+    }
+
+    #detailsWrapper,
+    #itemWrapper,
+    #listWrapper {
+      height: 100%;
+      overflow: scroll;
+    }
+
+    @media (max-width: 500px) {
+
+      #detailsWrapper,
+      #itemWrapper,
+      #listWrapper {
+        width: 100%;
+        left: 0px;
+      }
+
+      #backButton {
+        display: block;
+      }
+
+      body.state0 #backButton {
+        display: none;
+      }
+
+      body.state0 #listWrapper {
+        display: block;
+      }
+
+      body.state0 #itemWrapper {
+        display: none;
+      }
+
+      body.state0 #detailsWrapper {
+        display: none;
+      }
+
+      body.state1 #backButton {
+        display: block;
+      }
+
+      body.state1 #listWrapper {
+        display: none;
+      }
+
+      body.state1 #itemWrapper {
+        display: block;
+      }
+
+      body.state1 #detailsWrapper {
+        display: none;
+      }
+
+      body.state2 #backButton {
+        display: block;
+      }
+
+      body.state2 #listWrapper {
+        display: none;
+      }
+
+      body.state2 #itemWrapper {
+        display: none;
+      }
+
+      body.state2 #detailsWrapper {
+        display: block;
+      }
+    }
+
+    body {
+      margin: 0;
+    }
+
+    #addButton {
+      position: fixed;
+      margin-left: -25px;
+      bottom: 10px;
+    }
+
+    #logoutButton {
+      display: block;
+      margin: auto;
+      width: 130px;
+    }
+
+    #profile_picture {
+      /* margin: 1.5vh 0 1.5vh 0; */
+    }
+
+    .row.col.s6 {
+      display: flex;
+      flex-flow: column wrap;
+      align-items: center;
+    }
+
+    .first_name,
+    .last_name {
+      text-align: center;
+      width: 100%;
+    }
+
+    .input-field>label {
+      color: #FFFFFF;
+    }
+
+    /* yikes */
+    input:not([type]),
+    input[type=text]:not(.browser-default),
+    input[type=password]:not(.browser-default),
+    input[type=email]:not(.browser-default),
+    input[type=url]:not(.browser-default),
+    input[type=time]:not(.browser-default),
+    input[type=date]:not(.browser-default),
+    input[type=datetime]:not(.browser-default),
+    input[type=datetime-local]:not(.browser-default),
+    input[type=tel]:not(.browser-default),
+    input[type=number]:not(.browser-default),
+    input[type=search]:not(.browser-default),
+    textarea.materialize-textarea {
+      border-bottom-color: #FFFFFF;
+    }
+
+    .listButton .thumbnail {
+      height: 100px;
+      width: 100px;
+      float: left;
+      background: url(./rss.png);
+      background-size: contain;
+    }
+
+    .listButton .title {
+      text-align: left;
+      font-size: 20px;
+      width: calc(100% - 110px);
+      margin-left: 110px;
+    }
+
+    .listButton .subtitle {
+      text-align: left;
+      font-size: 15px;
+      width: calc(100% - 110px);
+      margin-left: 110px;
+    }
+
+    #feedList .menuButton {
+      display: block;
+      color: #FFFFFF;
+      text-transform: uppercase;
+      font-size: 20px;
+      padding: 5px 20px;
+      line-height: 24px;
+      font-family: 'Roboto', sans-serif
+    }
+
+    .menuButton.selected {
+      background: #EF8354;
+    }
+
+    .thumbnail {
+      height: 100px;
+      width: 100px;
+      display: block;
+      margin: auto;
+      box-shadow: 0px 0px 10px;
+      color: #2D3142;
+    }
+
+    div.thumbnail.circle {
+      display: inline-block;
+      margin-top: 1.5vh 0 1.5vh 0;
+    }
+
+    .wrapper {
+      font-family: 'Roboto', sans-serif
+    }
+
+    #logoutButton.red {
+      background-color: #2D3142
+        !important;
+    }
+  </style>
+
+  </script>
+  <script>
+    function validateEmail(email) {
+      var re = /\S+@\S+\.\S+/;
+      return re.test(email);
+    }
+
+    var state = 0;
+    var allFeeds = []
+    var allItems = []
+    var loadAllFeeds = function () {
+      loadFile("./getAllFeeds", function (data) {
+        createFeedMarkup(data);
+      });
+    }
+    var addNewFriend = function () {
+      var text = prompt("Enter Friend's Email");
+      if (validateEmail(text)) {
+        loadFile("./addFriend?email=" + text, function (data) {
+          data = JSON.parse(data);
+          console.log(data);
+          var f = data.friends || [];
+          createFriendMarkup(f);
+        });
+      } else {
+        alert("Enter correct email")
+      }
+    }
+
+    var allFriends = [];
+    var createFriendMarkup = function (flist) {
+      allFriends = flist;
+      var markup = "";
+      for (var i = 0; i < flist.length; i++) {
+        markup = markup + "<div class='listButton'>" +
+          "<div class='title'>" + flist[i] + "</div>" +
+          '<a class="waves-effect waves-light btn red" href="javascript:deleteFriend(' + i +
+          ')"><i class="material-icons left">delete</i>Delete</a>' +
+          '<a class="waves-effect waves-light btn blue" href="javascript:messageFriend(' + i +
+          ')"><i class="material-icons left">email</i>Message</a>' +
+          "</div>"
+      }
+      document.getElementById("friendList").innerHTML = markup;
+    }
+    var editFeed = function (index) {
+      var newText = prompt("Editing feed...", allFeeds[index].title);
+      if (newText != null) {
+        loadFile("./editFeed?id=" + allFeeds[index].id + "&newText=" +
+          newText,
+          function (data) {
+            createFeedMarkup(data)
+          });
+      }
+    }
+
+    var deleteFriend = function (index) {
+      var flag = confirm("Delete friend '" + allFriends[index] + "'?");
+      if (flag != false) {
+        loadFile("./deleteFriend?email=" + allFriends[index] + "&index=" + index, function (data) {
+          data = JSON.parse(data);
+          var f = data.friends || [];
+          createFriendMarkup(f);
+        });
+      }
+    }
+
+    var goBack = function () {
+      state = state - 1;
+      updateBodyClass();
+      console.log(state);
+      var y = function () {
+        if (state == 1) {
+          $("#itemWrapper .listButton").removeClass("selected");
+        } else if (state == 0) {
+          $("#listWrapper .listButton").removeClass("selected");
+        }
+      }
+      setTimeout(y, 1000);
+    }
+
+    var updateBodyClass = function () {
+      document.getElementsByTagName("body")[0].className = "state" + state;
+    }
+
+    var itemSelected = function (index) {
+      state = 2;
+      updateBodyClass();
+      document.getElementById("detailsWrapper").innerHTML = "<h1> Loading ...</h1>"
+      $("#itemWrapper .listButton").removeClass("selected");
+      $($("#itemWrapper .listButton")[index]).addClass("selected")
+      feedObj = allItems[index];
+      var markup =
+        "<h1>" + feedObj.name + "</h1>" +
+        "<img src='" + feedObj.artworkUrl100 + "'>" +
+        "<h2>" + feedObj.artistName + "</h2>";
+      document.getElementById("detailsWrapper").innerHTML = markup;
+    }
+
+    var feedSelected = function (index) {
+      state = 1;
+      updateBodyClass();
+      document.getElementById("itemWrapper").innerHTML = "<h1> Loading ... </h1>"
+      $("#feedList .listButton").removeClass("selected");
+      $($("#feedList .listButton")[index]).addClass("selected")
+
+      var url = allFeeds[index].text;
+      loadFile("./getFeedData?url=" + url, function (data) {
+        var x = JSON.parse(data);
+        var title = x.feed.title;
+        var items = x.feed.results;
+        allItems = items;
+        var markup = "<h1 class='heading'>" + title + "</h1>" +
+          '<a class="waves-effect waves-light btn blue" href=javascript:editFeed(' + index +
+          ')><i class="material-icons left">create</i>Rename</a>' +
+          '<a class="waves-effect waves-light btn red" href=javascript:deleteFeed(' + index +
+          ')><i class="material-icons left">not_interested</i>Delete</a>'
+        for (var i = 0; i < items.length; i++) {
+          markup = markup + "<button class='listButton' onclick='itemSelected(" + i + ")'>" +
+            "<div class='thumbnail' style='background-image:url(" + items[i].artworkUrl100 + ")'></div>" +
+            "<div class='title'>" + items[i].name + "</div>" +
+            "<div class='subtitle'>" + items[i].artistName + "</div>" +
+            "</button>";
+        }
+        document.getElementById("itemWrapper").innerHTML = markup;
+
+      });
+    }
+    var mainAux = function () {
+      state = 0;
+      updateBodyClass();
+      //loadAllFeeds();
+      menuButtonClicked(0);
+    }
+
+    var main = function () {
+      //return;
+      loadFile("/loginStatus", function (data) {
+        if (data === "0") {
+          window.location.href = './login.html'
+          return;
+        } else {
+          mainAux();
+          //document.getElementById("accountInfo").innerHTML = data;
+        }
+      });
+    }
+
+    var doLogout = function () {
+      var x = confirm("Logout now?")
+      if (x) {
+        loadFile("./logout", function (d) {
+          window.location.reload()
+        })
+      }
+    }
+
+    var menuButtonClicked = function (index) {
+      state = 1;
+      updateBodyClass();
+      $("#feedList .menuButton").removeClass("selected")
+      $("#feedList .menuButton:nth-of-type(" + (index + 1) + ")").addClass("selected z-depth-3")
+      $("#itemWrapper .wrapper").fadeOut(0);
+      $("#itemWrapper .wrapper:nth-of-type(" + (index + 1) + ")").fadeIn();
+      switch (index) {
+        case 0: //Account
+          break;
+        case 1: // friends
+          loadFile("./getUserInfo", function (data) {
+            data = JSON.parse(data);
+            var f = data.friends || [];
+            createFriendMarkup(f);
+          })
+          break;
+      }
+    }
+
+    function change_picture() {
+      var prompt = window.prompt('Please specify image URL.');
+      document.getElementById('profile_picture').src = prompt;
+    };
+  </script>
+</head>
+
+<body onload='main()'>
+  <div id='listWrapper'>
+    <h1 class='heading'>Menu</h1>
+
+    <div id='feedList'>
+      <a href="javascript:menuButtonClicked(0)" class="menuButton waves-effect waves-teal"><i
+          class="left material-icons">account_circle</i>Account</a>
+      <a href="javascript:menuButtonClicked(1)" class="menuButton waves-effect waves-teal"><i
+          class="left material-icons">face</i>Friends</a>
+      <a href="javascript:menuButtonClicked(2)" class="menuButton waves-effect waves-teal"><i
+          class="left material-icons">filter_list</i>Channels</a>
+      <a href="javascript:menuButtonClicked(3)" class="menuButton waves-effect waves-teal"><i
+          class="left material-icons">exposure_plus_1</i>Memberships</a>
+      <a href="javascript:menuButtonClicked(4)" class="menuButton waves-effect waves-teal"><i
+          class="left material-icons">email</i>Inbox</a>
+    </div>
+
+  </div>
+  <div id='itemWrapper'>
+    <div id='accountWrapper' class='wrapper z-depth-3'>
+      <h1 class='heading2'>Account</h1>
+      <div class='thumbnail circle' onclick='change_picture()'>
+        <img alt='profile picture' src='https://www.sbp-creative.com/wp-content/uploads/2017/01/profile-placeholder.png'
+          style='height: 100%; width: 100%; border-radius: 50%;' id='profile_picture' />
+      </div>
+
+      <div class="row">
+        <div class="input-field col s6">
+          <input placeholder="" type="text" class="validate">
+          <label for="first_name" class="first_name">First Name</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="last_name" type="text">
+          <label for="last_name" class="last_name">Last Name</label>
+        </div>
+      </div>
+      <a href='javascript:doLogout()' id='logoutButton' class="waves-effect waves-light btn red"><i
+          class="material-icons left">power_settings_new</i>Logout</a>
+
+    </div>
+    <div id='friendsWrapper' class='wrapper'>
+      <h1 class='heading'>Friends</h1>
+      <div class='list' id='friendList'> </div>
+      <a id='addButton' href='javascript:addNewFriend()' class="btn-floating btn-large waves-effect waves-light red"><i
+          class="material-icons">add</i></a>
+
+    </div>
+    <div id='channelsWrapper' class='wrapper'>
+      <div class='list' id='channelList'> </div>
+      <h1 class='heading'>Channels</h1>
+      <a id='addButton' href='javascript:addNewChannel()' class="btn-floating btn-large waves-effect waves-light red"><i
+          class="material-icons">add</i></a>
+
+
+    </div>
+    <div id='membershipWrapper' class='wrapper'>
+      <div class='list' id='membershipList'> </div>
+      <h1 class='heading'>Membership</h1>
+
+    </div>
+    <div id='inboxWrapper' class='wrapper'>
+      <h1 class='heading'>Inbox</h1>
+      <div class='list' id='messageList'> </div>
+      <a id='addButton' href='javascript:addNewMessage()' class="btn-floating btn-large waves-effect waves-light red"><i
+          class="material-icons">add</i></a>
+
+    </div>
+
+  </div>
+  <div id='detailsWrapper'>
+  </div>
+  <button class='actionButton' id='backButton' onclick='goBack()'> Back </button>
+</body>
+
+</body>
+
+</html>
